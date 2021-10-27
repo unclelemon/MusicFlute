@@ -2,6 +2,14 @@
 select coalesce(nullif(client_no,''),'0') from table
 
 select cast(substr(coalesce(nullif(client,''),'0000'),7,8)as integer) from table
+
+-- 删除表之前判断是否存在
+begin 
+    declare statement varchar(64);
+    declare continue handler for sqlstate '42760' BEGIN END;
+    SET statement = 'drop table schema.table';
+    execute immediate statement;
+end @
 ~~~
 
 ## sqlcode sqlstate 说明
