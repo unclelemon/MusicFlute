@@ -8,8 +8,8 @@ GET DATABASE MANAGER CONFIGURATION
 
 返回码描述如下
 
-0       DB2命令或SQL语句已成功执行
-1       SELECT或FETCH语句没有返回任何行
-2       DB2命令或SQL语句警告 
-4       DB2命令或SQL语句错误 
-8       命令行处理器系统错误
+- 0       DB2命令或SQL语句已成功执行
+- 1       SELECT或FETCH语句没有返回任何行
+- 2       DB2命令或SQL语句警告 
+- 4       DB2命令或SQL语句错误 
+- 8       命令行处理器系统错误
