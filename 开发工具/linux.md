@@ -30,6 +30,12 @@ grep word1 file.txt | grep word2 |grep word3
 必须同时满足三个条件（word1、word2和word3）才匹配。
 
 ### 常见参数：
-grep -i main haison.c #忽略大小写
-grep –n main haison.c #输出行号
-grep -v main haison.c #反检索，只显示不匹配的行
+- grep -i main haison.c #忽略大小写
+- grep –n main haison.c #输出行号
+- grep -v main haison.c #反检索，只显示不匹配的行
+
+
+
+## xargs
+- xargs 的一个选项 -I，使用 -I 指定一个替换字符串 {}，这个字符串在 xargs 扩展时会被替换掉，当 -I 与 xargs 结合使用，每一个参数命令都会被执行一次：
+find ./ | xargs -I {} grep -n word1 {} | grep word2 
