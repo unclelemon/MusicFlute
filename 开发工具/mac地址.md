@@ -10,3 +10,4 @@ windows 10 修改mac地址
 - 第四步：
 禁用 ，启用网卡
 查看新mac地址，ipconfig/all
+note:36-C9-3D-EA-B0-0A
