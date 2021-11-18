@@ -96,7 +96,10 @@ rm -rf a.log
 
 ### 打包命令tar
 ~~~shell
+# 将tar包解压到-C指定的目录下 x解压 z解压方式 f文件
 tar -C /usr/local -xzf go1.4.linux-amd64.tar.gz
+# 将当前文件夹进行压缩
+tar -czf  filename.tar.gz ./
 ~~~
 选项与参数
 - -c :建立打包文件，可搭配-v 查看过程中被打包的文件名（filename）；
