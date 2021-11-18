@@ -8,8 +8,20 @@ GET DATABASE MANAGER CONFIGURATION
 
 返回码描述如下
 
-- 0       DB2命令或SQL语句已成功执行
-- 1       SELECT或FETCH语句没有返回任何行
-- 2       DB2命令或SQL语句警告 
-- 4       DB2命令或SQL语句错误 
-- 8       命令行处理器系统错误
+- 0 ：      DB2命令或SQL语句已成功执行
+- 1 ：      SELECT或FETCH语句没有返回任何行
+- 2 ：      DB2命令或SQL语句警告 
+- 4 ：      DB2命令或SQL语句错误 
+- 8 ：      命令行处理器系统错误
+
+# 表空间
+1. 查看表所在的表空间：
+~~~shell
+–-表名大写
+select tabname,tbspace from syscat.tables where tabname = ‘表名’;
+~~~
+2. 查看表的索引：
+~~~sql
+–-表名大写
+select * from syscat.indexes where tabname = ‘表名’;
+~~~
