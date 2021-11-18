@@ -1,3 +1,13 @@
+##下载
+~~~shell
+# 镜像源的替换
+vscode.cdn.azure.cn
+将
+https://az764295.vo.msecnd.net/stable/3a6960b964327f0e3882ce18fcebd07ed191b316/VSCodeUserSetup-x64-1.62.2.exe
+替换成
+https://vscode.cdn.azure.cn/stable/3a6960b964327f0e3882ce18fcebd07ed191b316/VSCodeUserSetup-x64-1.62.2.exe
+~~~
+
 ## vscode设置成中文
 
 vscode默认的语言是英文，对于英文不好的小伙伴可能不太友好。简单几步教大家如何将vscode设置成中文。
