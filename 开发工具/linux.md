@@ -150,3 +150,40 @@ ccc
 　　命令：
 　　:%s/\n/,/
 ~~~
+
+### vim 处理换行符
+1. 设置文件格式
+
+ :set fileformats=unix,dos
+
+2. 查询当前文件格式
+
+:set fileformat?
+
+3. 转换文件格式
+
+:set fileformat=dos
+
+4. 设置文件结束符
+
+:set endofline
+
+5. 去掉文件结束符
+
+:set noendofline
+
+6. 显示换行
+
+:set list
+
+7. 退出list mode
+
+:set nolist
+
+8. 删除换行符
+
+:%s/\n//g
+
+9. 删除dos文件的回车符^M
+
+:%s/\r//g
