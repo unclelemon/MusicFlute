@@ -25,3 +25,7 @@ select tabname,tbspace from syscat.tables where tabname = ‘表名’;
 –-表名大写
 select * from syscat.indexes where tabname = ‘表名’;
 ~~~
+
+## 迁移数据库
+db2move schema export
+db2move schema import
