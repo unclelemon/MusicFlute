@@ -24,3 +24,40 @@ public interface Executor {
     // 创建固定长度的线程池，而且以延迟或者定时的方式执行任务。
     ExecutorService es4 = Executors.newScheduledThreadPool(NTHREADS);
 ~~~
+### 6.2.4 Executor的生命周期
+JVM只有在所有的非守护线程全部终止后才会推出。因此，如果无法正确的关闭Executor，那么JVM将永远无法关闭。为了解决执行服务的执行周期问题，Executor扩展了EexcutorService接口，添加了ExecutorService中的生命周期管理办法。
+~~~java
+ public interface ExecutorService extends Executor {
+        // 平缓的关闭：等全部线程执行执行完后关闭
+        void shutdown();
+        
+        List<Runnable> shutdownNow();
+
+        boolean isShutdown();
+        
+        boolean isTerminated();
+        
+        boolean awaitTermination(long timeout, TimeUnit unit)
+                throws InterruptedException;
+
+        <T> Future<T> submit(Callable<T> task);
+
+        <T> Future<T> submit(Runnable task, T result);
+
+        Future<?> submit(Runnable task);
+
+        <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
+                throws InterruptedException;
+
+        <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks,
+                                      long timeout, TimeUnit unit)
+                throws InterruptedException;
+    
+        <T> T invokeAny(Collection<? extends Callable<T>> tasks)
+                throws InterruptedException, ExecutionException;
+
+        <T> T invokeAny(Collection<? extends Callable<T>> tasks,
+                        long timeout, TimeUnit unit)
+                throws InterruptedException, ExecutionException, TimeoutException;
+    }
+~~~
