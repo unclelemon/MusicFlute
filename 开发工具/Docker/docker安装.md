@@ -8,6 +8,24 @@ windows 10 企业版，旗舰版 等 除去家庭版 可以开启虚拟化技术
 ### 打开Hyper-V
 [官方教程](https://docs.microsoft.com/zh-cn/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v)
 
+### Docker换源
+
+~~~shell
+ "registry-mirrors" : [
+   "https://mirror.ccs.tencentyun.com",
+   "http://registry.docker-cn.com",
+   "http://docker.mirrors.ustc.edu.cn",
+   "http://hub-mirror.c.163.com"
+ ],
+~~~
+
+### 查看版本号
+
+~~~
+# docker --version
+Docker version 20.10.3
+~~~
+
 ## windows 到 docker 互传文件
 使用ps 查看所有在运行的docker容器
 docker ps 
@@ -21,3 +39,4 @@ docker cp d:\file nusld:/root/sdjk/
 ~~~
 - 从docker传文件到windows
 docker cp 容器名字:容器路径 filename 
+
