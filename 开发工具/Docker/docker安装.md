@@ -1,8 +1,12 @@
-## Windows 安装docker
+## Windows10 安装docker
 windows 10 企业版，旗舰版 等 除去家庭版 可以开启虚拟化技术。安装docker。
+
+### 查看是否开启虚拟化
 
 在任务管理器中-》性能-》查看虚拟化技术 enable 或者disable；
 如果是disable ，进入bios。一般开机按F2,或者按照各个厂商的主板进入bios。开启虚拟化技术。
+### 打开Hyper-V
+[官方教程](https://docs.microsoft.com/zh-cn/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v)
 
 ## windows 到 docker 互传文件
 使用ps 查看所有在运行的docker容器

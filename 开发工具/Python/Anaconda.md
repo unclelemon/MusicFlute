@@ -39,8 +39,9 @@ channels:
 show_channel_urls: true
 ~~~
 
-删源
+## 删源
 换回conda的默认源。查看了conda config的文档后，发现直接删除channels即可。
+
 ~~~
 conda config --remove-key channels
 ~~~
