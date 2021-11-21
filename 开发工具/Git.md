@@ -55,3 +55,17 @@ git push -u origin master
 ### Git镜像加速
 
 也就是github clone加速的时候，前面的域名用https://hub.fastgit.org/ 来替换掉https://github.com就行啦！
+
+### 创建公钥
+
+~~~shell
+# 创建公钥
+ssh-keygen -t rsa -C "example@email.com"
+# 进入目录
+cd ~/.ssh/
+# 复制公钥
+cat id_rsa.pub
+# 验证 地址不能更改
+ssh -T git@github.com
+~~~
+
