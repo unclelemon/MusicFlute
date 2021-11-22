@@ -50,7 +50,6 @@ db2 import from /home/xxxx.IXF of IXF insert into tablename
 ~~~
 
 ### 备份
-
 ~~~sql
 db2  +c  -tvsf db_yuupdate.sql -z db_yuupdate.log 
 db2 rollback
@@ -77,14 +76,14 @@ fi
 ~~~sql
 #!/bin/bash
  
-#开始连接数据库
+# 开始连接数据库
 db2 connect to xxx
  
-#执行sql
+# 执行sql
 sql="select aa from table"
 aas=`db2 ${sql}`
  
-#返回值判断
+# 返回值判断
 if [ $? -ne 0 ]
 then
 #显示db2返回的错误信息
@@ -92,7 +91,7 @@ echo "${aas}"
 exit 1
 fi
  
-#对取得的数据进行处理,循环。
+# 对取得的数据进行处理,循环。
 echo "$aas" | sed -e '4,/^$/!d;/^$/d' |
 while read aa
 do
@@ -105,7 +104,7 @@ do
   rm file_tmp.sql
 done
  
-#断开数据库连接
+# 断开数据库连接
 db2 terminate
 
 ~~~
@@ -133,4 +132,46 @@ db2start
 db2 get dbm cfg |more    ----查询db2数据库配置信息
 # 查看端口
 db2 get dbm cfg | grep SVCENAME
+~~~
+
+### DB2 SCHEMA
+1. DB2数据库中用户的概念
+Oracle和MySQL数据库的用户都是数据库内部的用户，由数据库来管理。
+
+但DB2不一样，DB2没有数据库用户的概念，它依赖于操作系统用户，也就是操作系统上有这个用户，这个用户才可能连接到DB2数据库。连接数据库的命令：
+
+db2 connect to dbname user <username> using <password>
+
+这里的username是一个操作系统的用户，password是指这个系统用户的密码。
+
+2. DB2中Schema的概念
+每个DB2的表的完整名子都是由两部分组成 SchemaName.Tablename，没有例外。
+如果访问表的时候，不加Schema的名子，就有一个默认的Schema, 比如运行了以下的SQL语句：
+~~~
+db2 "create table a.t1 (id int)"
+db2 "create table b.t1 (id int)"
+~~~
+那么就创建了两个表，schema分别是a和b，那么问题来了，如果创建表的时候不指定schema呢？
+默认的Schema就是当前用户的用户名，比如当前连接用户是 db2inst1，发出如下SQL
+db2 "create table t1(id int)"
+那么这个表的schema就是db2inst1
+
+当然，可以使用db2 set current schema来改变当前会话默认的Schema
+~~~
+db2 "set current schema c"
+db2 "create table t1(id int)"
+~~~
+这个新建的表的完整表名就是c.t1
+
+使用db2 list tables for all可以看到所有表，如下：
+ 
+~~~shell
+db2inst1@node01:~> db2 "list tables for all" | grep -iw t1
+Table/View                      Schema          Type  Creation time             
+------------------------------- --------------- ----- --------------------------
+T1                              A               T     2019-08-23-06.53.18.807936
+T1                              B               T     2019-08-23-06.53.22.671670
+T1                              C               T     2019-08-23-06.53.39.154763
+T1                              DB2INST1        T     2019-08-23-06.53.29.872110
+可以看到有4条表 A.T1, B.T1, C.T1和DB2INST1.T1，如果现在发出命令db2 "select * from t1"，那么实际访问的是C.T1，因为前面有发出过命令db2 set current schema c
 ~~~
