@@ -137,11 +137,13 @@ db2 get dbm cfg | grep SVCENAME
 ### DB2 SCHEMA
 1. DB2数据库中用户的概念
 Oracle和MySQL数据库的用户都是数据库内部的用户，由数据库来管理。
-
-但DB2不一样，DB2没有数据库用户的概念，它依赖于操作系统用户，也就是操作系统上有这个用户，这个用户才可能连接到DB2数据库。连接数据库的命令：
-
+但DB2不一样，DB2没有数据库用户的概念，它依赖于操作系统用户，也就是操作系统上有这个用户，这个用户才可能连接到DB2数据库。
+db2这里模式名字和用户名字可以不一样，db2数据库下创建模式(也可以不创建。不创建的情况下，DB2会使用你连接的用户名作为默认的模式名字)。
+- 总结： 一个instance下可以有多个database，一个database下可以有多个schema，1个schema可以被多个user使用。
+连接数据库的命令：
+~~~
 db2 connect to dbname user <username> using <password>
-
+~~~
 这里的username是一个操作系统的用户，password是指这个系统用户的密码。
 
 2. DB2中Schema的概念
@@ -175,3 +177,6 @@ T1                              C               T     2019-08-23-06.53.39.154763
 T1                              DB2INST1        T     2019-08-23-06.53.29.872110
 可以看到有4条表 A.T1, B.T1, C.T1和DB2INST1.T1，如果现在发出命令db2 "select * from t1"，那么实际访问的是C.T1，因为前面有发出过命令db2 set current schema c
 ~~~
+
+[DB2新建用户](https://www.cnblogs.com/OliverQin/p/8428019.html)
+由于DB2用户必须是系统用户，所以新建系统用户。
