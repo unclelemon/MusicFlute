@@ -128,4 +128,9 @@ db2 force application all
 db2stop
 db2start
 ~~~
-
+## 查询端口
+~~~
+db2 get dbm cfg |more    ----查询db2数据库配置信息
+# 查看端口
+db2 get dbm cfg | grep SVCENAME
+~~~
