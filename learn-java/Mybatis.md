@@ -88,3 +88,51 @@ generatorConfig.xml
     </context>
 </generatorConfiguration>
 ~~~
+
+###  问题1：
+Spring
+~~~
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+~~~
+Springboot
+~~~
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>1.3.2</version>
+        </dependency>
+~~~
+
+### 问题2：
+
+~~~
+driver-class-name: com.mysql.cj.jdbc.Driver 报错
+pom.xml中缺少
+ <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>8.0.12</scope>
+ </dependency>
+~~~
+
+### 问题3：
+
+Field injection is not recommended 
+
+为了避免出现@Autowired注入为null
+
+推荐使用set注入
+
+~~~java
+    @Qualifier("studentMapper")
+    @Autowired
+    public void setStudentMapper(StudentMapper studentMapper){
+        this.studentMapper = studentMapper;
+    }
+
+~~~
+
