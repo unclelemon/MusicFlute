@@ -108,7 +108,7 @@ done
 db2 terminate
 
 ~~~
-
+其中如果select 1 from table fetch  first 1 rows only,如果表中没有数据，则返回失败，不等于0
 ~~~shell
 -eq //equals等于
 -ne //no equals不等于
