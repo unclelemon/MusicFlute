@@ -27,5 +27,13 @@ select * from syscat.indexes where tabname = ‘表名’;
 ~~~
 
 ## 迁移数据库
-db2move schema export
-db2move schema import
+- db2move schema export
+- db2move schema import
+
+select 1 from 中的1是一常量（可以为任意数值），查到的所有行的值都是它，但从效率上来说，1>xxx>*，因为不用查字典表。
+
+1：select  1 from table       增加临时列，每行的列值是写在select后的数，这条sql语句中是1
+
+2：select count(1)  from table   管count(a)的a值如何变化，得出的值总是table表的行数
+
+3：select sum(1) from table   计算临时列的和
