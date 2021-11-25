@@ -108,7 +108,7 @@ done
 db2 terminate
 
 ~~~
-其中如果select 1 from table fetch  first 1 rows only,如果表中没有数据，则返回失败，不等于0
+
 ~~~shell
 -eq //equals等于
 -ne //no equals不等于
@@ -117,7 +117,17 @@ db2 terminate
 -ge //greater equals大于等于
 -le //less equals小于等于
 ~~~
-
+## 数据回滚
+可以用select 1 from table fetch  first 1 rows only判断表是否存在
+如果使用
+~~~
+db2 alter table tablename add tablecolumn VARCHAR(9) NOT NULL DEFAULT '0000'
+~~~ 
+创建的字段，在执行sql文件过程中，使用的-c 参数可以被回滚 ;
+创建主键约束
+~~~
+db2 alter table tablename add constraint PK_DIVISION primary key(TA_CODE,PARENT)
+~~~
 ### 重启
 
 ~~~sql
