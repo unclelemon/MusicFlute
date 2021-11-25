@@ -95,3 +95,11 @@ $@ # 代表【"$1" "$2" "$3" "$4"】
 ~~~
 echo * # 打印出当前文件夹下的所有文件
 ~~~
+## 编辑数组
+~~~
+tables=('table_1' 'table_2' 'table_3')
+for table in ${tables[@]}
+do
+    echo ${table}
+done
+~~~
