@@ -37,3 +37,7 @@ select 1 from 中的1是一常量（可以为任意数值），查到的所有�
 2：select count(1)  from table   管count(a)的a值如何变化，得出的值总是table表的行数
 
 3：select sum(1) from table   计算临时列的和
+
+创建表、新增字段、插入数据 失败回滚
+~~~
+~~~
