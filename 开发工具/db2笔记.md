@@ -14,7 +14,7 @@ GET DATABASE MANAGER CONFIGURATION
 - 4 ：      DB2命令或SQL语句错误 
 - 8 ：      命令行处理器系统错误
 
-# 表空间
+## 表空间
 1. 查看表所在的表空间：
 ~~~shell
 –-表名大写
@@ -38,6 +38,37 @@ select 1 from 中的1是一常量（可以为任意数值），查到的所有�
 
 3：select sum(1) from table   计算临时列的和
 
-创建表、新增字段、插入数据 失败回滚
+## 创建表、新增字段、插入数据 失败回滚
 ~~~
+# 也可以从输入参数，使用$* 获取全部输入参数
+tables=('table1' 'table2' 'table3')
+
+db2 connect to schema
+# -v 打印执行的每一条sql view
+# -s 参数s的意思是每次遇到报错的命令就停止执行操作，后面的sql就不再执行了 stop
+# -t 表示使用分号语句终结符 termin
+# -f 表示其后就是读取sql的脚本文件 从输入文件读内容 file
+db2 -stvf bak.txt -z table_ddl_1.log
+if [[ $? -ne 0 ]];then
+    echo "error"
+    db2 rollbak
+    for arg in ${tables[@]}
+    do
+        # 设置单独一列但临时空间，该列值都为1
+        sql="select 1 from ${arg} fetch first 1 rows only"
+        STATE=`db2 ${sql}`
+        # =~ 表示${STATE} 字符串中是否包含字符串 “SQLSTATE”
+        if [[ ${STATE} =~ "SQLSTATE" ]]
+        then
+            echo "${arg} NOT EXISTS"
+        else 
+            db2 "drop table ${arg}"
+            echo "drop ${arg} success"
+        fi
+    done
+else 
+    db2 commit
+fi
+db2 disconnect current
+# 或者db2 connect  reset
 ~~~
