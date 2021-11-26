@@ -1,3 +1,15 @@
+## JAVA基础
+### SimpleDateFormat
+![SimpleDateFormat格式](../images/image.png)
+SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
+转换的格式：yyyy是完整的西元年，MM是月份，dd是日期， 至于HH:mm:ss.SSS 时分秒
+
+例如MM是月份，mm是分；
+HH是24小时制，而hh是12小时制 
+ss是秒，SSS是毫秒
+DD代表 day of year  今年的第N天，dd才是这个月的多少天。
+
+## JUC高并发
 ### ThreadLocal 介绍
 
 [参考网站](https://www.cnblogs.com/fsmly/p/11020641.html)
