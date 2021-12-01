@@ -190,3 +190,42 @@ T1                              DB2INST1        T     2019-08-23-06.53.29.872110
 
 [DB2新建用户](https://www.cnblogs.com/OliverQin/p/8428019.html)
 由于DB2用户必须是系统用户，所以新建系统用户。
+### DB2创建自增主键
+
+~~~
+GENERATED ALWAYS AS IDENTITY (  
+   START WITH +1  
+   INCREMENT BY +1 
+   MINVALUE +1  
+   MAXVALUE +2147483647 
+   NO CYCLE  
+   CACHE 20  
+   NO ORDER 
+) 
+~~~
+其中：
+
+NO CYCLE：到达最大值后，不循环回来
+
+CACHE：缓存20个值，提高性能
+
+NO ORDER：指定identity值不必按照请求顺序生成
+
+完整建表语句，如下：
+~~~
+CREATE TABLE ADMINISTRATOR.DAT_LOG (
+  LOD_ID INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (  
+		    START WITH +1  
+		    INCREMENT BY +1  
+		    MINVALUE +1  
+		    MAXVALUE +2147483647  
+		    NO CYCLE  
+		    CACHE 20  
+		    NO ORDER ),
+  LOD_TIME TIMESTAMP DEFAULT NULL,
+  LOG_USERID varchar(50) DEFAULT NULL,
+  LOG_USERNAME varchar(50) DEFAULT NULL,
+  LOG_DESC varchar(3000) DEFAULT NULL,
+  PRIMARY KEY (LOG_ID)
+) 
+~~~
