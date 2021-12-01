@@ -72,3 +72,5 @@ fi
 db2 disconnect current
 # 或者db2 connect  reset
 ~~~
+### decimal()
+知道decimal(p[ , s])的意思就能明白了，decimal(10)中默认的s为0，就是说没有小数位，提取10位的整数，舍去小数后的小数位；decimal(10,2)的意思是提取10位的浮点数（包括整数位和小数位，一共10位），取小数点后两位，四舍五入。在DB2中decimal最大精度是31位，小数的范围从-10^31+1到10^31-1。
