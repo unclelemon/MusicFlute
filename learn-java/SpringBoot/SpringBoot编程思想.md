@@ -19,7 +19,9 @@
 
 作用于构建Bean的方法上和作用于类上同理。如下为作用于构建Bean的方法上。
 
-[参考博客](https://www.cnblogs.com/duanxz/p/4520571.html)
+[参考博客1](https://www.cnblogs.com/duanxz/p/4520571.html)
+
+[参考博客2](https://blog.csdn.net/qq_45173404/article/details/108693030)
 
 ~~~properties
 #数据源
@@ -63,3 +65,9 @@ public class DruidDataSourceConfig {
 #### @EnableConfigurationProperties
 
 用于注入ConfigurationProperties。
+
+### ImportResource 和 PropertySource 的不同点
+- @PropertySource 用于引入*.Properties或者 .yml 用于给javabean注入值
+- @ImportResource 用于引入.xml 类型的配置文件 在spring boot中已经被配置类替代
+- @PropertySource 一般用在javabean的类名上
+- @ImportResource一般用于启动类上
