@@ -151,73 +151,92 @@ COPY honeybadger honeybadger
    ~~~
 ## 安装mysql-docker
 
-### 配置文件（可跳过）
+由于由于mysql8.0的安全机制的改变，安装过程与5.7有些不同
 
 ~~~
-# 进入已启动的容器
-docker exec -it mysql bin/bash
-# 退出进入的容器
-exit;
+docker info 
+~~~
 
-创建my.cnf配置文件
-touch /mydata/mysql/my.cnf
+查看docker 运行状态,如下显示为正常运行
 
-因为有目录映射，所以我们可以直接在镜像外执行
-vi /mydata/mysql/conf/my.cnf 
+~~~
+Client:
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  app: Docker App (Docker Inc., v0.9.1-beta3)
+  buildx: Build with BuildKit (Docker Inc., v0.6.3-docker)
+  scan: Docker Scan (Docker Inc., v0.8.0)
 
-my.conf添加如下内容：
-[client]
-default-character-set=utf8
-[mysql]
-default-character-set=utf8
-[mysqld]
-default_authentication_plugin=mysql_native_password
-init_connect='SET collation_connection = utf8_unicode_ci'
-init_connect='SET NAMES utf8'
-character-set-server=utf8
-collation-server=utf8_unicode_ci
-skip-character-set-client-handshake
-skip-name-resolve
-
-保存(注意评论区该配置不对，不是collection而是collation)
-# 
-log_timestamps=SYSTEM：日志记录使用UTC时区，需要修改成系统时区
-character-set-server=utf8：设置字符集为utf8
-default_authentication_plugin：mysql8.0后的默认认证插件是caching_sha2_password，会导致我们用Navicat连接不上的问题，避免麻烦直接改成以前的认证方式
-lower_case_table_names=1：
-因为windows默认是1，linux默认是0，Mac OS X默认是 2，开发中很容易因为本地数据库和线上数据库配置不统一，而导致出问题（windows和mac不能设置为0，最多改成1和2）
-下面比较的意思是指：在代码里sql用到表名的地方，用大写表名能否查出数据库里的小写表名。
-0：创建的时候区分大小写，查询比较的时候也区分大小写
-1：代表创建表是一律小写的，但比较的时候不区分大小写（输入大写表名也能查到）
-2：代表创建表区分大小写，但比较的时候是小写的
-
-docker restart mysql
-
+Server:
+ Containers: 2
+  Running: 1
+  Paused: 0
+  Stopped: 1
+ Images: 3
+ Server Version: 20.10.11
+ Storage Driver: overlay2
+  Backing Filesystem: xfs
+  Supports d_type: true
+  Native Overlay Diff: true
+  userxattr: false
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 1
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local logentries splunk syslog
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 io.containerd.runtime.v1.linux runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 7b11cfaabd73bb80907dd23182b9347b4245eb5d
+ runc version: v1.0.2-0-g52b36a2
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: default
+ Kernel Version: 3.10.0-693.5.2.el7.x86_64
+ Operating System: CentOS Linux 7 (Core)
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 4
+ Total Memory: 7.636GiB
+ Name: centos-7.shared
+ ID: MAXS:J5DK:LU3W:RCT6:57RB:77U4:LL3O:BJCS:OKXM:42AX:C5II:U4TY
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ Registry: https://index.docker.io/v1/
+ Labels:
+ Experimental: false
+ Insecure Registries:
+  127.0.0.0/8
+ Registry Mirrors:
+  https://docker.mirrors.ustc.edu.cn/
+ Live Restore Enabled: false
 ~~~
 
 
 
-### 安装
-
-注意：mysql 8.0 必须要有下面这一行
-
--v /mydata/mysql/mysql-files:/var/lib/mysql-files \
+### MYSQL5.7安装
 
    ~~~
    # 下载
    sudo docker pull mysql:5.7
    
    # 启动 mysql 5.0  
-   # 注意-d 后面跟的是容器名
-   # --name指定容器名字 -v目录挂载 -p指定端口映射  -e设置mysql参数 -d后台运行
-   sudo docker run -p 3306:3306 --name mysql5 \
-   -v /mydata/mysql/log:/var/log/mysql \
-   -v /mydata/mysql/data:/var/lib/mysql \
-   -v /mydata/mysql/conf:/etc/mysql \
-   -v /mydata/mysql/mysql-files:/var/lib/mysql-files \
+   # 注意-d images 名字
+   # --name 设置容器名字 -v目录挂载 -p指定端口映射  -e设置mysql参数 -d后台运行 并指定镜像和版本，同时返回容器ID	
+   
+   sudo docker run -p 3306:3306 --name mysql57 \
+   -v /mydata/mysql57/log:/var/log/mysql \
+   -v /mydata/mysql57/data:/var/lib/mysql \
+   -v /mydata/mysql57/conf:/etc/mysql \
    -e MYSQL_ROOT_PASSWORD=12345678 \
    -d mysql:5.7
    
+   -e 参数如下
    MYSQL_ROOT_PASSWORD ：root的密码
    MYSQL_USER ：建一个普通用户
    MYSQL_PASSWORD ：普通用户的密码
@@ -226,9 +245,10 @@ docker restart mysql
    docker exec -it mysql bin/bash
    # 退出进入的容器
    exit;
-   
-   因为有目录映射，所以我们可以直接在镜像外执行
-   vi /mydata/mysql/conf/my.conf 
+   ~~~
+   因为有目录映射，所以我们可以直接在镜像外编写配置文件
+   ~~~
+   vi /mydata/mysql57/conf/my.cnf 
    
    [client]
    default-character-set=utf8
@@ -243,12 +263,23 @@ docker restart mysql
    skip-name-resolve
    
    # 重启
-   docker restart mysql
+   docker restart mysql57
    
    ~~~
-mysql 8.0
+### mysql 8.0 安装
+
+mysql8 之前的版本中加密规则是mysql_native_password,而在mysql8之后,加密规则是caching_sha2_password
+
 ~~~
-docker run -d -p 3806:3306 --name mysql8x --privileged=true -v /docker/mysql/conf:/etc/mysql/conf.d -v /docker/mysql/logs:/logs -v /docker/mysql/data80:/var/lib/mysql -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=123456 mysql:latest
+# 虚拟机中使用3806端口来映射docker 中的mysql3306端口
+
+docker run -p 3806:3306 --name mysql8 --privileged=true \
+-v /docker/mysql8/conf:/etc/mysql/conf.d \
+-v /docker/mysql8/logs:/logs \
+-v /docker/mysql8/data8:/var/lib/mysql \
+-v /etc/localtime:/etc/localtime \
+-e MYSQL_ROOT_PASSWORD=123456 \
+-d mysql:8.0
 
 参数说明：
 -p 3806:3306：把容器内的3306端口映射到本机的3806端口，我们远程连接的时候也是连3806
@@ -265,8 +296,99 @@ docker run -d -p 3806:3306 --name mysql8x --privileged=true -v /docker/mysql/con
 -e MYSQL_ROOT_PASSWORD=“123456”：设置root用户密码
 
 ~~~
+#### 配置文件（可跳过）
 
+其中/etc/mysql/my.cnf 文件会被mysql优先加载，再去加载/etc/mysql/conf.d/my.cnf配置文件
 
+~~~
+# 进入已启动的容器
+docker exec -it mysql bin/bash
+# 退出进入的容器
+exit;
+
+# 因为有目录映射，所以我们可以直接在镜像外执行
+vi /docker/mysql8/conf/my.cnf 
+
+my.conf添加如下内容：
+
+[client]
+default-character-set=utf8
+[mysql]
+default-character-set=utf8
+[mysqld]
+default_authentication_plugin=mysql_native_password
+init_connect='SET collation_connection = utf8_unicode_ci'
+init_connect='SET NAMES utf8'
+character-set-server=utf8
+collation-server=utf8_unicode_ci
+skip-character-set-client-handshake
+skip-name-resolve
+~~~
+重启 mysql
+~~~
+docker restart mysql8
+~~~
+#### 密码修改
+
+解决MySQL登录ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using passwor)问题
+
+打开刚才我们找到的配置文件，然后在里面找到 `[mysqld]` 这一项，然后在该配置项下添加 `skip-grant-tables` 这个配置，然后保存文件。
+
+~~~
+/docker/mysql8/conf/my.cnf完整内容：
+
+[client]
+default-character-set=utf8
+[mysql]
+default-character-set=utf8
+[mysqld]
+default_authentication_plugin=mysql_native_password
+init_connect='SET collation_connection = utf8_unicode_ci'
+init_connect='SET NAMES utf8'
+character-set-server=utf8
+collation-server=utf8_unicode_ci
+skip-character-set-client-handshake
+skip-name-resolve
+skip-grant-tables
+~~~
+
+`mysql -u root -p` 命令然后回车，当需要输入密码时，直接按enter键，便可以不用密码登录到数据库当中。修改完密码后，需要删除skip-grant-tables，才能开启远程访问
+
+~~~
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '12345678';
+
+'root'可以改为你自己定义的用户名
+'password'指的是用户密码，即想使用的验证密码
+'%'表示：指的是该用户开放的IP，%表示所有IP均可访问，可以是'localhost'(仅本机访问，相当于127.0.0.1)，可以是具体的'*.*.*.*'(具体某一IP)　
+比如用户密码是123456，当执行上面这条语句之后，mysql对用户名为root密码为123456的校验改为了mysql_native_password方式
+~~~
+
+如果出现以下错误,则需要flush privileges; 
+
+~~~
+ERROR 1290 (HY000): The MySQL server is running with the --skip-grant-tables option so it cannot execute this statement 
+~~~
+
+```
+# 新设置用户或更改密码后需用flush privileges刷新MySQL的系统权限相关表,
+# 首先flush
+flush privileges; 
+
+# 12345678 是密码，可以改成其他的
+# 8.0以前的写法
+set password for root@localhost=password('12345678'); 
+# 8.0以后的写法 ,两条语句都可以
+SET PASSWORD FOR root@localhost = '12345678';
+ALTER user 'root'@'localhost' IDENTIFIED BY '12345678';
+
+#添加远程登录用户 
+# 必须先删除skip-grant-tables
+CREATE USER 'hzlin'@'%' IDENTIFIED WITH mysql_native_password BY '12345678';
+GRANT ALL PRIVILEGES ON *.* TO 'hzlin'@'%';
+flush privileges; 
+
+　　　　
+```
 
 ###   Mysql操作
 
