@@ -129,5 +129,6 @@ DB2 数据库主要在如下两种情形时会进行锁升级：
 （1）   当一个应用的锁所使用的内存 >LOCKLIST × MAXLOCKS
 
 （2）   多个应用的锁使用的内存 >LOCKLIST
-
-   
+## 重启数据库
+db2stop force
+db2start
