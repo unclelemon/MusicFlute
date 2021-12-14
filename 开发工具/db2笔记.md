@@ -130,5 +130,5 @@ DB2 数据库主要在如下两种情形时会进行锁升级：
 
 （2）   多个应用的锁使用的内存 >LOCKLIST
 ## 重启数据库
-db2stop force
-db2start
+- db2stop force
+- db2start
