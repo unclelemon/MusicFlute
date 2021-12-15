@@ -132,3 +132,16 @@ DB2 数据库主要在如下两种情形时会进行锁升级：
 ## 重启数据库
 - db2stop force
 - db2start
+### 死锁历史记录
+查看event monitor状态
+~~~
+db2 "select event_mon_state(EVMONNAME) from syscat.eventmonitors"
+~~~
+查看属性
+~~~
+db2 "select * from syscat.eventmonitors"
+~~~
+对锁等待的application 做snapshot
+~~~
+db2 get snapshot for application agentid 8 
+~~~
