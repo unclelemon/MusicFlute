@@ -130,4 +130,18 @@ DB2 数据库主要在如下两种情形时会进行锁升级：
 
 （2）   多个应用的锁使用的内存 >LOCKLIST
 
-   
+## 触发器
+### 删除触发器
+~~~
+db2 drop trigger <trigger_name>
+~~~
+### 创建触发器
+示例：创建update 后的触发器，其中有o 和 n值
+~~~
+create or replace trigger  update_emp
+     AFTER UPDATE OF salary ON employee
+     REFERENCING OLD AS o NEW AS n
+     FOR EACH ROW
+     WHEN (n.salary <> o.salry)
+      INSERT INTO audit_emp VALUES (o.empno,'Update',n.salary,current user, current timestamp)
+~~~
