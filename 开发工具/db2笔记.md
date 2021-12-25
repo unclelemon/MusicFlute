@@ -170,3 +170,26 @@ db2 "select * from syscat.eventmonitors"
 ~~~
 db2 get snapshot for application agentid 8 
 ~~~
+
+## DB2 创建java-UDF
+### 编写java代码
+~~~
+~~~
+### 编译java代码
+这里要使用db2 自带的jdk编译.java文件
+查看db2 java路径
+~~~shell
+db2 get dbm cfg | grep -i java
+~~~
+如果出现格式不正确
+使用如下命令
+~~~
+export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
+~~~
+### 放置文件 
+将编译后的class文件放到db2 中的function文件夹中
+~~~
+mv sample.class /home/xxxist/sqllib/function/xxx.class
+~~~
+### 创建function
+### 验证
