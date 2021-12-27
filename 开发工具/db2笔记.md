@@ -207,6 +207,20 @@ export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
 mv sample.class /home/xxxist/sqllib/function/xxx.class
 ~~~
 ### 创建function
+简单参考
+~~~
+set current schema='TEST'
+CREATE OR REPLACE FUNCTION count_by_regexp(str varchar(3000),msg varchar(3000))
+RETURNS INTEGER
+FENCED 
+NOT DETERMINISTIC
+NO SQL
+LANGUAGE JAVA
+PARAMETER STYLE JAVA
+EXTERNAL NAME 'Count.countByRegexp' 
+NO EXTERNAL ACTION
+~~~
+复杂命令
 ~~~sql 
 DROP FUNCTION WITH_NEW
 CREATE OR REPLACE FUNCTION WITH_NEW(str VARCHAR(256), regrex VARCHAR(256)) 
