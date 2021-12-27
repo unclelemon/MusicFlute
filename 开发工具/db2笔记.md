@@ -174,14 +174,29 @@ db2 get snapshot for application agentid 8
 ## DB2 创建java-UDF
 ### 编写java代码
 ~~~
+import COM.ibm.db2.app.UDF;
+
+public class TimeByRegexp extends UDF{
+
+    public static int timeByRe(String str, String regexp){
+        if (str.matches(regexp)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}
+
 ~~~
 ### 编译java代码
 这里要使用db2 自带的jdk编译.java文件
 查看db2 java路径
 ~~~shell
 db2 get dbm cfg | grep -i java
+# 编译
+javac xxx.java
 ~~~
-如果出现格式不正确
+如果编译过程中出现格式不正确
 使用如下命令
 ~~~
 export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
@@ -192,4 +207,30 @@ export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
 mv sample.class /home/xxxist/sqllib/function/xxx.class
 ~~~
 ### 创建function
+~~~sql 
+DROP FUNCTION WITH_NEW
+CREATE OR REPLACE FUNCTION WITH_NEW(str VARCHAR(256), regrex VARCHAR(256)) 
+RETURNS INTEGER
+SPECIFIC WITH_NEW  -- 取别名
+EXTERNAL NAME 'TimeByRegexp!timeByRe'  -- 引入java 类!函数
+LANGUAGE JAVA
+PARAMETER STYLE JAVA
+NOT DETERMINISTIC                   --
+FENCED                              --
+THREADSAFE
+RETURNS NULL ON NULL INPUT
+NO SQL
+NO EXTERNAL ACTION                  -- 指定函数对内部程序能否有影响
+NO SCRATCHPAD
+NO FINAL CALL
+ALLOW PARALLEL
+NO DBINFO
+STATIC DISPATCH 
+INHERIT SPECIAL REGISTERS
+~~~
 ### 验证
+~~~shell
+# 查看
+select * from SYSCAT.FUNCTIONS WHERE FUNCSCHEMA = 'ifm30'
+values xxx.函数名
+~~~
