@@ -76,10 +76,35 @@ db2 disconnect current
 知道decimal(p[ , s])的意思就能明白了，decimal(10)中默认的s为0，就是说没有小数位，提取10位的整数，舍去小数后的小数位；decimal(10,2)的意思是提取10位的浮点数（包括整数位和小数位，一共10位），取小数点后两位，四舍五入。在DB2中decimal最大精度是31位，小数的范围从-10^31+1到10^31-1。
 
 ## 死锁
+### 隔离级别
+| 隔离级别  | 脏读  | 不可重复读 | 幻读
+|---|---|---|
+| 未提交读（Uncommitted Read）  | 是  | 是   | 是
+| 游标稳定性（Cursor Stability）  | 否  | 是 |否
+| 读稳定性（Read Stability） | 否  | 否  | 是
+| 可重复读（Repeatable Read）  | 否  | 否  | 否
 
-[参考博客](http://www.noobyard.com/article/p-fnabbbbn-eo.html)
+- with ur
+ur 就是 Uncommitted Read，即未提交读的隔离级别，允许脏读，不加行锁，作用就是在 select 的时候，不需要对 update 的数据进行等待
+- with cs
+db2 "select * from xxx with cs ", 这里的 with cs 也可以不写，因为默认的隔离级别就是这种，这种隔离级下，在一个事务中，结果集中只有正在被读取的那一行(游标指向的行)将被加上NS锁，其他未被处理的行上不被加锁。这种隔离级只能保证正在被处理的行的值不会被其他并发的程序所改变。
+- with rs
+如果使用这种隔离级，在一个事务中所有被读取过的行上都会被加上NS锁，直到该事务被提交或回滚，行上的锁才会被释放。这样可以保证在一个事务中即使多次读取同一行，得到的值不会改变。但是，如果使用这种隔离级，在一个事务中，如果使用同样的搜索标准重新打开已被处理过的游标，则结果集可能改变。(可能会增加某些行，这些行被称为幻影行(Phantom))，对应幻读。这是因为 RS 隔离级别并不能阻止通过插入或更新操作在结果集中加入新行
+- with rr
+是最严格的隔离级别，如果使用这种隔离级，在一个事务中所有被读取过的行上都会被加上 S 锁，知道该事务被提交或回滚，行上的锁才会被释放。这样可以保证在一个事务中即使多次读取同一行，得到的值不会改变。另外，在同一事务中如果以同样的搜索标准重新打开已被处理过的游标，得到的结果集不会改变。重复读相对于读稳定性而言，加锁的范围更大。
+
+对于读可靠性，应用程序只对符合要求的所有行加锁，而对于重复读，应用程序将对所有被扫描过的行都加锁。例如，如果一个应用程序对一个表中的 10000 行数据进行扫描，最终找到了 100 条符合搜索条件的结果行。如果该应用程序使用的是读可靠性隔离级，应用程序将只对这符合条件的 100 行加锁;如果该应用程序使用的是重复读隔离级，应用程序将对被扫描过的 10000 行都加锁。
+
+### 锁的介绍
+[参考博客1](https://blog.csdn.net/somezz/article/details/84844555)
+[参考博客2](https://blog.csdn.net/jcy7523/article/details/85006049)
+- 表锁
+![输入图片说明](../images/%E8%A1%A8%E9%94%81image.png)
+- 行锁
+![输入图片说明](../images/Rowimage.png)
 
 ### 查看和更改与锁相关的主要配置参数 
+[参考博客](http://www.noobyard.com/article/p-fnabbbbn-eo.html)
 
 CLP方式： 
 
@@ -129,7 +154,31 @@ DB2 数据库主要在如下两种情形时会进行锁升级：
 （1）   当一个应用的锁所使用的内存 >LOCKLIST × MAXLOCKS
 
 （2）   多个应用的锁使用的内存 >LOCKLIST
+## 重启数据库
+- db2stop force
+- db2start
+### 死锁历史记录
+查看event monitor状态
+~~~
+db2 "select event_mon_state(EVMONNAME) from syscat.eventmonitors"
+~~~
+查看属性
+~~~
+db2 "select * from syscat.eventmonitors"
+~~~
+对锁等待的application 做snapshot
+~~~
+db2 get snapshot for application agentid 8 
+~~~
 
+## DB2 创建java-UDF
+### 编写java代码
+~~~
+import COM.ibm.db2.app.UDF;
+
+public class TimeByRegexp extends UDF{
+
+<<<<<<< HEAD
 ## 触发器
 ### 删除触发器
 ~~~
@@ -144,4 +193,75 @@ create or replace trigger  update_emp
      FOR EACH ROW
      WHEN (n.salary <> o.salry)
       INSERT INTO audit_emp VALUES (o.empno,'Update',n.salary,current user, current timestamp)
+=======
+    public static int timeByRe(String str, String regexp){
+        if (str.matches(regexp)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}
+
+~~~
+### 编译java代码
+这里要使用db2 自带的jdk编译.java文件
+查看db2 java路径
+~~~shell
+db2 get dbm cfg | grep -i java
+# 编译
+javac xxx.java
+~~~
+如果编译过程中出现格式不正确
+使用如下命令
+~~~
+export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
+~~~
+### 放置文件 
+将编译后的class文件放到db2 中的function文件夹中
+~~~
+mv sample.class /home/xxxist/sqllib/function/xxx.class
+~~~
+### 创建function
+简单参考
+~~~
+set current schema='TEST'
+CREATE OR REPLACE FUNCTION count_by_regexp(str varchar(3000),msg varchar(3000))
+RETURNS INTEGER
+FENCED 
+NOT DETERMINISTIC
+NO SQL
+LANGUAGE JAVA
+PARAMETER STYLE JAVA
+EXTERNAL NAME 'Count.countByRegexp' 
+NO EXTERNAL ACTION
+~~~
+复杂命令
+~~~sql 
+DROP FUNCTION WITH_NEW
+CREATE OR REPLACE FUNCTION WITH_NEW(str VARCHAR(256), regrex VARCHAR(256)) 
+RETURNS INTEGER
+SPECIFIC WITH_NEW  -- 取别名
+EXTERNAL NAME 'TimeByRegexp!timeByRe'  -- 引入java 类!函数
+LANGUAGE JAVA
+PARAMETER STYLE JAVA
+NOT DETERMINISTIC                   --
+FENCED                              --
+THREADSAFE
+RETURNS NULL ON NULL INPUT
+NO SQL
+NO EXTERNAL ACTION                  -- 指定函数对内部程序能否有影响
+NO SCRATCHPAD
+NO FINAL CALL
+ALLOW PARALLEL
+NO DBINFO
+STATIC DISPATCH 
+INHERIT SPECIAL REGISTERS
+~~~
+### 验证
+~~~shell
+# 查看
+select * from SYSCAT.FUNCTIONS WHERE FUNCSCHEMA = 'ifm30'
+values xxx.函数名
+>>>>>>> c994d74dfc72e7fa4c8d3a35fca4e0dedb6e0c01
 ~~~
