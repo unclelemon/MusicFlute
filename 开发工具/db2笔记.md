@@ -265,3 +265,16 @@ select * from SYSCAT.FUNCTIONS WHERE FUNCSCHEMA = 'ifm30'
 values xxx.函数名
 >>>>>>> c994d74dfc72e7fa4c8d3a35fca4e0dedb6e0c01
 ~~~
+
+## DB2查看字符
+### 查看db2 编码
+~~~
+db2 get db cfg for sample
+# 查看 Database code set
+~~~
+### 字节数
+~~~
+# INTEGER begin_date
+values length(begin_date) # 4
+ 
+~~~
