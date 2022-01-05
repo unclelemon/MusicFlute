@@ -263,7 +263,6 @@ INHERIT SPECIAL REGISTERS
 # 查看
 select * from SYSCAT.FUNCTIONS WHERE FUNCSCHEMA = 'ifm30'
 values xxx.函数名
->>>>>>> c994d74dfc72e7fa4c8d3a35fca4e0dedb6e0c01
 ~~~
 
 ## DB2查看字符
@@ -273,8 +272,17 @@ db2 get db cfg for sample
 # 查看 Database code set
 ~~~
 ### 字节数
+
+如使用GBK格式，一个字节占2个字节；使用UTF-8 ,一个字节占3个字节。
+
+使用char，默认转换为11个字节，使用to_char,或者trim或自动去除多余的空符号。
 ~~~
 # INTEGER begin_date
-values length(begin_date) # 4
- 
+values length(begin_date)     # 4
+values length(2)              # 4
+values length(char(2))        # 11
+values length(to_char(2))     # 1
+values length(trim(char(2)))  # 1
+values length(char('32'))     # 2
+values length(to_char('32'))  # 2
 ~~~
