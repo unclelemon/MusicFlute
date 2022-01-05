@@ -76,13 +76,20 @@ db2 disconnect current
 知道decimal(p[ , s])的意思就能明白了，decimal(10)中默认的s为0，就是说没有小数位，提取10位的整数，舍去小数后的小数位；decimal(10,2)的意思是提取10位的浮点数（包括整数位和小数位，一共10位），取小数点后两位，四舍五入。在DB2中decimal最大精度是31位，小数的范围从-10^31+1到10^31-1。
 
 ## 死锁
+- 脏读：当事务A执行修改数据，但是还未提交，此时事务B却已经读取到了未提交的数据，该数据为脏数据。
+- 不可重复读：当事务A执行时间比较长时候，此时有一堆小事务，在修改数据，导致事务A每次同样的执行却读取到不同的数据
+- 幻读：当事务A读取数据时候，读取到了10条数据，此时还未提交，同时此时事务B插入了一条数据，导致事务A重新查询时，查出来的数据与上一次不一致。
+
 ### 隔离级别
-| 隔离级别  | 脏读  | 不可重复读 | 幻读
-|---|---|---|
-| 未提交读（Uncommitted Read）  | 是  | 是   | 是
-| 游标稳定性（Cursor Stability）  | 否  | 是 |否
-| 读稳定性（Read Stability） | 否  | 否  | 是
-| 可重复读（Repeatable Read）  | 否  | 否  | 否
+
+（是表示允许，否表示不允许）
+
+| 隔离级别  | 脏读  | 不可重复读 | 幻读|
+| ---- | ---- | ---- |---- |
+| 未提交读（Uncommitted Read）  | 是  | 是   | 是|
+| 游标稳定性（Cursor Stability）  | 否  | 是 |否|
+| 读稳定性（Read Stability） | 否  | 否  | 是|
+| 可重复读（Repeatable Read）  | 否  | 否  | 否|
 
 - with ur
 ur 就是 Uncommitted Read，即未提交读的隔离级别，允许脏读，不加行锁，作用就是在 select 的时候，不需要对 update 的数据进行等待
@@ -177,8 +184,16 @@ db2 get snapshot for application agentid 8
 import COM.ibm.db2.app.UDF;
 
 public class TimeByRegexp extends UDF{
+public static int timeByRe(String str, String regexp){
+        if (str.matches(regexp)) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}
+~~~
 
-<<<<<<< HEAD
 ## 触发器
 ### 删除触发器
 ~~~
@@ -193,29 +208,20 @@ create or replace trigger  update_emp
      FOR EACH ROW
      WHEN (n.salary <> o.salry)
       INSERT INTO audit_emp VALUES (o.empno,'Update',n.salary,current user, current timestamp)
-=======
-    public static int timeByRe(String str, String regexp){
-        if (str.matches(regexp)) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-}
-
 ~~~
 ### 编译java代码
 这里要使用db2 自带的jdk编译.java文件
 查看db2 java路径
 ~~~shell
 db2 get dbm cfg | grep -i java
-# 编译
-javac xxx.java
 ~~~
+###  编译
+javac xxx.java
+
 如果编译过程中出现格式不正确
 使用如下命令
 ~~~
-export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
+export  JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8
 ~~~
 ### 放置文件 
 将编译后的class文件放到db2 中的function文件夹中
