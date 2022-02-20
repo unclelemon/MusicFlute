@@ -124,7 +124,7 @@ COPY honeybadger honeybadger
 
 3. 删除容器
 
-   再删除容器(container), 必须先保证容器已经停止运行
+   再删除容器(container)之前, 必须先保证容器已经停止运行
 
    ~~~
    docker rm 925a665ae7b6
@@ -525,4 +525,96 @@ echo -e "hellow\nworld" >> lb.txt
 ~~~
 systemctl restart docker
 ~~~
+
+
+
+## 镜像 Container
+
+要有Container首先要有Image，也就是说Container是通过image创建的。
+Container是在原先的Image之上新加的一层，称作Container layer，这一层是可读可写的（Image是只读的）。
+在面向对象的编程语言中，有类跟对象的概念。类是抽象的，对象是类的具体实现。Image跟Container可以类比面向对象中的类跟对象，Image就相当于抽象的类，Container就相当于具体实例化的对象。
+Image跟Container的职责区别：Image负责APP的存储和分发，Container负责运行APP。
+
+docker的一些命令
+docker container ls 命令可以查看当前正在运行的容器：
+
+docker container ls -a 可以列举出所有的容器，包括正在运行的和没有运行的容器：
+
+```java
+[root@localhost ~]# docker container ls -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                     PORTS               NAMES
+38c819a21e84        hello-world         "/hello"            46 hours ago        Exited (0) 46 hours ago                        distracted_sinoussi
+cc4f0b206a5c        mydocler            "/hello"            46 hours ago        Exited (13) 46 hours ago                       compassionate_austin
+d00f46e347d2        mydocler            "/hello"            2 days ago          Exited (13) 2 days ago                         epic_poitras
+b600431e3e62        hello-world         "/hello"            2 days ago          Exited (0) 2 days ago                          suspicious_ritchie
+4a9554ac3cc5        hello-world         "/hello"            2 days ago          Exited (0) 2 days ago                          cranky_elbakyan
+31e391e789db        alpine              "sh"                3 months ago        Dead                                           hungry_jang
+[root@localhost ~]# 
+```
+
+
+运行docker容器
+
+
+运行docker容器
+
+运行docker容器可以使用 docekr run <IMAGE STRING>，但用这个命令运行的容器会在运行完后，容器就自动退出了，不能跟用户有交互的效果。
+想要有交互效果可以使用docker run -it <IMAGE STRING>命令。
+
+```
+[root@localhost ~]# docker run -it alpine
+```
+
+
+我们可以看到，这样就相当于进入了一个操作系统里面。另起一个终端，输入docker container ls，可以看到当前正在运行的容器：
+
+我们可以看到，这样就相当于进入了一个操作系统里面。另起一个终端，输入docker container ls，可以看到当前正在运行的容器：
+
+```
+[root@localhost ~]# docker container ls 
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+5f0e3c110aa2        alpine              "/bin/sh"           2 minutes ago       Up 2 minutes                            elegant_bohr
+```
+
+
+后台运行container容器，使用
+
+```
+ docker run -d <IMAGE STRING>
+```
+
+退出当前正在运行的容器，键入exit命令。
+**docker ps -a 命令等价于docker container ls -a**
+docker image ls可以列举出来当前所有的Image，它的简写方式为docker images
+
+```
+[root@localhost ~]# docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+mydocler            latest              92e255dbbd0e        2 days ago          865kB
+hello-world         latest              e38bc07ac18e        2 months ago        1.85kB
+nginx               alpine              1058e9c89897        4 months ago        17.9MB
+alpine              latest              a741b13578d9        5 months ago        4.14MB
+```
+
+[root@localhost ~]# 
+docker 删除某个Container的命令：docker rm <CONTAINER ID>
+
+[root@localhost ~]# 
+docker 删除某个Container的命令：docker rm <CONTAINER ID>
+
+删除当前的某个Image的命令:docker image rm <IMAGE ID>，简写方式为：docker rmi <IMAGE ID>
+
+列举出所有container的id，docker container ls -aq：
+
+```
+[root@localhost ~]# docker container ls -aq
+5f0e3c110aa2
+df6fdbe3845f
+63ae7603d5b8
+7341247b420e
+2daca6673376
+d00f46e347d2
+b600431e3e62
+4a9554ac3cc5
+```
 
