@@ -124,6 +124,8 @@ COPY honeybadger honeybadger
 
 3. 删除容器
 
+   再删除容器(container), 必须先保证容器已经停止运行
+
    ~~~
    docker rm 925a665ae7b6
    ~~~
