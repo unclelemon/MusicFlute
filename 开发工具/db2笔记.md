@@ -304,3 +304,5 @@ values length(trim(char(2)))  # 1
 values length(char('32'))     # 2
 values length(to_char('32'))  # 2
 ~~~
+db2 设置最大连接数
+db2 update dbm cfg using MAX_COORDAGENTS 200 MAXCONNECTIONS 200
